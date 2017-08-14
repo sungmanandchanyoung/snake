@@ -1,61 +1,48 @@
 var numOfGrids = 1;
 var margin = 10;
 var board = [];
-var velocity = 0;
-var interval = velocity;
 var id = 0;
-var snake = new Snake({
-    x: 0,
-    y: 0,
-    dir: 0
-});
 var foods = [];
+var snake;
 var snakes = [];
 var gameover = false;
 
 function preload() {
     init
-        // The function inside of ".then()" will be the "resolve" function
+    
+    // The lambda function inside of ".then()" will be the "resolve" function
 	.then((data) => {
-
 	    // Initialize variables
-	    numOfGrids = data.numOfGrids;
-	    velocity = data.velocity;
-	    interval = velocity;
 	    id = data.id;
-	    
+	    numOfGrids = data.numOfGrids;
 	    // Snakes
 	    for (var i = 0; i < data.snakes.length; i++) {
-		switch(data.snakes[i].id == id) {
-		case true: 
-		    snake = new Snake({
-    			x : data.snakes[i].x,
-    			y : data.snakes[i].y,
-    			dir: data.snakes[i].dir
-		    });
-		    break;
-		case false:
-		    snakes.push(new Snake({
-			x : data.snakes[i].x,
-    			y : data.snakes[i].y,
-    			dir: data.snakes[i].dir
-		    }));
-		    break;
+		snakes.push(new Snake({
+		    id : data.snakes[i].id,
+		    x : data.snakes[i].x,
+		    y : data.snakes[i].y,
+		    velocity : data.snakes[i].velocity,
+		    dir : data.snakes[i].dir
+		}));
+
+		// My snake
+		if (snakes[snakes.length - 1].id == id) {
+		    snake = snakes[snakes.length - 1];
 		}
 	    }
-	    
 	    // Foods
-	    for(var i = 0; i < data.foods.length; i++) {
-		foods.push(new square({
+	    for (var i = 0; i < data.foods.length; i++) {
+		foods.push(new Square({
 		    x : data.foods[i].x,
-		    y :data.foods[i].y
+		    y : data.foods[i].y
 		}));
 	    }
 	})
-
-        // The function inside of ".catch()" will be the "reject" function
-	.catch(() => {
+    
+    // The lambda function inside of ".catch()" will be the "reject" function
+	.catch((reason) => {
 	    console.log("ERROR");
+	    console.log(reason);
 	});
 }
 
@@ -64,7 +51,7 @@ function setup() {
     rectMode(CORNERS);
     for (var i = 0; i < numOfGrids; i++) {
 	for (var j = 0; j < numOfGrids; j++) {
-	    board.push(new square({
+	    board.push(new Square({
 		x: i,
 		y: j
 	    }));
@@ -74,12 +61,13 @@ function setup() {
 
 function draw() {
     background(51, 51, 51);
+    
     // Gameboard
     fill(255, 255, 255);
     var gridlength = (width - 2 * margin) / numOfGrids;
     for (var i = 0; i < numOfGrids + 1; i++) {
-	line(margin + i * gridlength, margin, margin + i * gridlength, height - margin);
-	line(margin, margin + i * gridlength, width - margin, margin + i * gridlength);
+    	line(margin + i * gridlength, margin, margin + i * gridlength, height - margin);
+    	line(margin, margin + i * gridlength, width - margin, margin + i * gridlength);
     }
 
     // Foods
@@ -88,39 +76,16 @@ function draw() {
 	foods[i].display();
     }
 
-
     // Snakes
     fill(255, 0, 0);
     for(var i = 0; i < snakes.length; i++) {
 	snakes[i].update();
 	snakes[i].display();
     }
-
-    // My snake
-    fill(0, 255, 0);
-    snake.update();
-    snake.display();
-
-    interval--;
-
+    
     if (gameover) {
 	// fill(255, 0, 0);
 	// rect(0, 0, width, height);
-    }
-}
-
-function square(params) {
-    this.x = params.x;
-    this.y = params.y;
-
-    this.display = function() {
-	stroke(0, 0, 0);
-	rect(
-	    x_co(this.x),
-	    y_co(this.y),
-	    x_co(this.x + 1),
-	    y_co(this.y + 1)
-	);
     }
 }
 
@@ -140,6 +105,7 @@ function keyPressed() {
 	if (lastMove != UP_ARROW && lastMove != DOWN_ARROW) snake.moves.push(DOWN_ARROW);
 	break;
     }
+    changeDir(snake);
 }
 
 function y_co(y) {
@@ -148,4 +114,19 @@ function y_co(y) {
 
 function x_co(x) {
     return ((width - 2 * margin) / numOfGrids) * x + margin;
+}
+
+function Square(params) {
+    this.x = params.x;
+    this.y = params.y;
+
+    this.display = function() {
+	stroke(0, 0, 0);
+	rect(
+	    x_co(this.x),
+	    y_co(this.y),
+	    x_co(this.x + 1),
+	    y_co(this.y + 1)
+	);
+    }
 }

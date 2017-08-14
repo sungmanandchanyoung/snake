@@ -1,9 +1,12 @@
 // Separated from 'sketch.js' for better readability.
 
 function Snake(params) {
-    
+
+    this.id = params.id;
     this.x = params.x;
     this.y = params.y;
+    this.velocity = params.velocity;
+    this.interval = this.velocity;
     this.moves = [params.dir];
     this.grow = false;
 
@@ -13,8 +16,8 @@ function Snake(params) {
     }];
 
     // this.tail and head_prev is to remember the snake.head_prev box for animation
-    this.tail_prev = 0; // Created to promote consistency of naming convention
-    this.tail_now = 0; // Created to promote consistency of naming convention
+    this.tail_prev = 0;
+    this.tail_now = 0;
     this.head_prev = 0;
     this.head_now = 0;
 
@@ -22,7 +25,7 @@ function Snake(params) {
     this.move = true;
 
     this.update = function() {
-	if (interval < 0) {
+	if (this.interval < 0) {
 	    if (this.moves.length > 1 && this.move)
 		this.moves.shift();
 	    this.move = false;
@@ -47,7 +50,7 @@ function Snake(params) {
 	    // Turn this.move as true
 	    if (this.moves.length > 1)
 		this.moves.shift();
-	    interval = velocity;
+	    this.interval = this.velocity;
 
 
 	    this.tail_prev = this.body[0];
@@ -84,49 +87,47 @@ function Snake(params) {
 		gameover = true;
 	    }
 	}
+	this.interval--;
     }
 
     this.display = function() {
 	this.tail_now = this.body[0];
 	this.head_now = this.body[this.body.length - 1];
-	noStroke();
-	fill(255, 0, 0);
-
-	/**
-	   Drawing tail
-	*/
-	// left
-	if (this.tail_now.x < this.tail_prev.x)
+	
+	switch (true) { // Drawing tail
+	case (this.tail_now.x < this.tail_prev.x) : // Left
 	    rect(
-		x_co(lerp(this.tail_prev.x, this.tail_now.x, 1 - interval / velocity) + 1),
-		y_co(this.tail_prev.y),// y_co(lerp(this.tail.y, this.body[0].y, 1 - interval / velocity)),
+		x_co(lerp(this.tail_prev.x, this.tail_now.x, 1 - this.interval / this.velocity) + 1),
+		y_co(this.tail_prev.y),
 		x_co(this.tail_prev.x),
 		y_co(this.tail_prev.y + 1)
 	    );
-	// right
-	if (this.tail_now.x > this.tail_prev.x)
+	    break;
+	case (this.tail_now.x > this.tail_prev.x) : // Right
 	    rect(
-		x_co(lerp(this.tail_prev.x, this.tail_now.x, 1 - interval / velocity)),
-		y_co(this.tail_prev.y),// y_co(lerp(this.tail.y, this.body[0].y, 1 -interval / velocity)),
+		x_co(lerp(this.tail_prev.x, this.tail_now.x, 1 - this.interval / this.velocity)),
+		y_co(this.tail_prev.y),
 		x_co(this.tail_now.x),
 		y_co(this.tail_prev.y + 1)
 	    );
-	// up
-	if (this.tail_now.y < this.tail_prev.y)
+	    break;
+	case (this.tail_now.y < this.tail_prev.y) : // Up
 	    rect(
 		x_co(this.tail_prev.x),
 		y_co(this.tail_prev.y),
-		x_co(this.tail_prev.x + 1),// x_co((lerp(this.tail.x, this.body[0].x, 1 - interval / velocity) + 1)),
-		y_co(lerp(this.tail_prev.y, this.tail_now.y, 1 - interval / velocity) + 1)
+		x_co(this.tail_prev.x + 1),
+		y_co(lerp(this.tail_prev.y, this.tail_now.y, 1 - this.interval / this.velocity) + 1)
 	    );
-	// down
-	if (this.tail_now.y > this.tail_prev.y)
+	    break;
+	case (this.tail_now.y > this.tail_prev.y) : // Down
 	    rect(
 		x_co(this.tail_prev.x),
 		y_co(this.tail_now.y),
-		x_co(this.tail_prev.x + 1),// x_co((lerp(this.tail.x, this.body[0].x, 1 - interval / velocity) + 1)),
-		y_co(lerp(this.tail_prev.y, this.tail_now.y, 1 - interval / velocity))
+		x_co(this.tail_prev.x + 1),
+		y_co(lerp(this.tail_prev.y, this.tail_now.y, 1 - this.interval / this.velocity))
 	    );
+	    break;
+	}
 
 	/**
 	   Drawing head
@@ -136,7 +137,7 @@ function Snake(params) {
 	    rect(
 		x_co(this.head_prev.x),
 		y_co(this.head_prev.y),
-		x_co(lerp(this.head_prev.x, this.head_now.x, 1 - interval / velocity)),
+		x_co(lerp(this.head_prev.x, this.head_now.x, 1 - this.interval / this.velocity)),
 		y_co(this.head_prev.y + 1) // y_co(lerp(this.head_prev.y, this.head_now.y, 1 - interval / velocity) + 1)
 	    );
 	// right
@@ -144,7 +145,7 @@ function Snake(params) {
 	    rect(
 		x_co(this.head_prev.x + 1),
 		y_co(this.head_prev.y),
-		x_co(lerp(this.head_prev.x, this.head_now.x, 1 - interval / velocity) + 1),
+		x_co(lerp(this.head_prev.x, this.head_now.x, 1 - this.interval / this.velocity) + 1),
 		y_co(this.head_prev.y + 1) // y_co(lerp(this.head_prev.y, this.head_now.y, 1 - interval / velocity) + 1)
 	    );
 	// up
@@ -153,7 +154,7 @@ function Snake(params) {
 		x_co(this.head_prev.x),
 		y_co(this.head_prev.y),
 		x_co(this.head_prev.x + 1), // x_co(lerp(this.head_prev.x, this.head_now.x, 1 - interval / velocity) + 1),
-		y_co(lerp(this.head_prev.y, this.head_now.y, 1 - interval / velocity))
+		y_co(lerp(this.head_prev.y, this.head_now.y, 1 - this.interval / this.velocity))
 	    );
 	// down
 	if (this.head_now.y > this.head_prev.y)
@@ -161,7 +162,7 @@ function Snake(params) {
 		x_co(this.head_prev.x),
 		y_co(this.head_prev.y + 1),
 		x_co(this.head_prev.x + 1), // x_co(lerp(this.head_prev.x, this.head_now.x, 1 - interval / velocity) + 1),
-		y_co(lerp(this.head_prev.y, this.head_now.y, 1 - interval / velocity) + 1)
+		y_co(lerp(this.head_prev.y, this.head_now.y, 1 - this.interval / this.velocity) + 1)
 	    );
 	/**
 	   Drawing body
@@ -174,7 +175,5 @@ function Snake(params) {
 		y_co(this.body[i].y + 1)
 	    );
 	}
-	noFill();
-	stroke(0, 0, 0);
     }
 }
