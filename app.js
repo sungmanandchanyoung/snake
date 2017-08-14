@@ -78,6 +78,13 @@ io.on("connect", function(socket) {
     });
 
     socket.on("disconnect", function() {
+	for(var i = 0; i < snakes.length; i++) {
+	    if (snakes[i].id == socket.handshake.session.id) {
+		socket.broadcast.emit("disconnected", snakes[i].id);
+		snakes.splice(i, 1);
+		break;
+	    }
+	}
     });
 });
 
