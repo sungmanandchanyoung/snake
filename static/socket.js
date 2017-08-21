@@ -12,7 +12,7 @@ var init = new Promise((resolve, reject) => {
 	    resolve(data);
 	}
 	else {
-	    // If the "data" is null, the request to the server will be treated as faild.
+	    // If the "data" is null, the request to the server will be treated as failed.
 	    // Finally the "reject" function will be called.
 	    reject();
 	}
