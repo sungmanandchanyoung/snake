@@ -16,9 +16,13 @@ var sharedSession = require("express-socket.io-session");
 
 // Server port
 var port = 3000;
-app.listen(process.env.port || port, function() {
-    console.log("[SERVER RUNNING ON PORT " + port + "] [" + new Date() + "]");
+app.set('port', (process.env.PORT || 5000));
+app.listen(app.get('port'), function() {
+    console.log("[SERVER RUNNING ON PORT " + app.get('port') + "] [" + new Date() + "]");
 });
+
+
+
 
 
 // Setup to share the session between Express & Socket.io
