@@ -1,8 +1,7 @@
 // Dependencies
 var express = require("express");
 var app = express();
-// var http = require("https").Server(app);
-var io = require("socket.io").listen(app);
+
 var path = require("path");
 var session = require("express-session")({
     secret: "secret",
@@ -14,12 +13,11 @@ var session = require("express-session")({
 });
 var sharedSession = require("express-socket.io-session");
 
-// Server port
-var port = 3000;
 app.set('port', (process.env.PORT || 5000));
-app.listen(app.get('port'), function() {
+var server = app.listen(app.get('port'), function() {
     console.log("[SERVER RUNNING ON PORT " + app.get('port') + "] [" + new Date() + "]");
 });
+var io = require("socket.io").listen(server);
 
 
 
@@ -96,7 +94,7 @@ io.on("connect", function(socket) {
 	    }
 	}
     });
-// asdf
+    // asdf
 });
 
 var OPTIONS = {
