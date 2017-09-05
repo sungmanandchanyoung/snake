@@ -72,7 +72,6 @@ io.on("connect", function(socket) {
     });
 
     socket.on("changeDir", (data) => {
-	console.log(socket.handshake.session.id);
 	snakes[socket.handshake.session.id].moves = data;
 	// io.emit("changeDir", snakes);
 	// socket.broadcast.emit("changeDir", snakes);
