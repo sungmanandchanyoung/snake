@@ -16,7 +16,7 @@ var sharedSession = require("express-socket.io-session");
 
 // Server port
 var port = 3000;
-http.listen(port, function() {
+http.listen(process.env.port || port, function() {
     console.log("[SERVER RUNNING ON PORT " + port + "] [" + new Date() + "]");
 });
 
