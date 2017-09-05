@@ -2,7 +2,7 @@
 var express = require("express");
 var app = express();
 // var http = require("https").Server(app);
-var io = require("socket.io")();
+var io = require("socket.io").listen(app);
 var path = require("path");
 var session = require("express-session")({
     secret: "secret",
