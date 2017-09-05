@@ -72,15 +72,17 @@ io.on("connect", function(socket) {
     });
 
     socket.on("changeDir", (data) => {
-	snakes[socket.handshake.session.id].moves = data;
-	// io.emit("changeDir", snakes);
-	// socket.broadcast.emit("changeDir", snakes);
-	socket.broadcast.emit("changeDir", {
-	    id: socket.handshake.session.id,
-	    moves: snakes[socket.handshake.session.id].moves
-	});
+	if (snakes[socket.handshake.session.id]) {
+	    snakes[socket.handshake.session.id].moves = data;
+	    // io.emit("changeDir", snakes);
+	    // socket.broadcast.emit("changeDir", snakes);
+	    socket.broadcast.emit("changeDir", {
+		id: socket.handshake.session.id,
+		moves: snakes[socket.handshake.session.id].moves
+	    });
+	}
     });
-
+    
     socket.on("disconnect", function() {
 	for(var i = 0; i < snakes.length; i++) {
 	    if (snakes[i].id == socket.handshake.session.id) {
@@ -90,6 +92,7 @@ io.on("connect", function(socket) {
 	    }
 	}
     });
+
 });
 
 var OPTIONS = {

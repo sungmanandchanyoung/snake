@@ -1,23 +1,33 @@
 {
-  "name": "collab.ver",
-  "version": "1.0.0",
-  "description": "",
-  "dependencies": {
-    "express": "^4.15.4",
-    "express-session": "^1.15.5",
-    "express-socket.io-session": "^1.3.2",
-    "socket.io": "^2.0.3"
-  },
-  "devDependencies": {},
-  "scripts": {},
-  "repository": {
-    "type": "git",
-    "url": ""
-  },
-  "keywords": [],
-  "author": "",
-  "license": "",
-  "bugs": {
-    "url": ""
-  }
+    "name": "collab.ver",
+    "version": "1.0.0",
+    "description": "",
+    "dependencies": {
+	"express": "^4.15.4",
+	"express-session": "^1.15.5",
+	"express-socket.io-session": "^1.3.2",
+	"socket.io": "^2.0.3"
+    },
+    "devDependencies": {},
+    "main": "app.js",
+    "scripts": {
+	"start": "node app.js"
+    },
+    "repository": {
+	"type": "git",
+	"url": "https://github.com/sungmanandchanyoung/snake.git"
+    },
+    "engines": {
+	"node": "8.4.0"
+    },
+    "keywords": [
+	"node",
+	"heroku",
+	"express"
+    ],
+    "author": "",
+    "license": "MIT",
+    "bugs": {
+	"url": ""
+    }
 }
