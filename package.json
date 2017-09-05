@@ -18,7 +18,8 @@
       "url": "https://github.com/sungmanandchanyoung/snake.git"
    },
    "engines": {
-      "node": "8.4.0"
+       "node": "8.4.0",
+       "npm": "5.3.0"
    },
    "keywords": [
       "node",

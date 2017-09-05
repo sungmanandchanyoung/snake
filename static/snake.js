@@ -5,6 +5,8 @@ function Snake(params) {
     this.y = params.y;
     this.velocity = params.velocity;
     this.interval = this.velocity;
+    this.interval_bridge = 1;
+    this.t_0 = performance.now();
     this.moves = params.moves;
     this.grow = false;
 
@@ -46,11 +48,11 @@ function Snake(params) {
 		break;
 	    }
 	    // Turn this.move as true
-	    if (this.moves.length > 1)
-		this.moves.shift();
-	    this.interval = this.velocity;
+	    if (this.moves.length > 1) this.moves.shift();
 
-
+	    this.interval_bridge += (int(Math.abs(this.interval / this.velocity)) + 1);
+	    this.interval = (this.t_0 - performance.now()) + this.interval_bridge * this.velocity;
+	    
 	    this.tail_prev = this.body[0];
 	    this.head_prev = this.body[this.body.length - 1];
 
@@ -68,13 +70,6 @@ function Snake(params) {
 		y: this.y
 	    });
 
-	    // if (this.x == food.x && this.y == food.y) {
-	    // 	length++;
-	    // 	this.grow = true;
-	    // 	food.x = int(random(numOfGrids));
-	    // 	food.y = int(random(numOfGrids));
-	    // }
-
 	    for (var i = 0; i < this.body.length - 1; i++) {
 		if (this.x == this.body[i].x && this.y == this.body[i].y) {
 		    gameover = true;
@@ -85,8 +80,9 @@ function Snake(params) {
 		gameover = true;
 	    }
 	}
-	this.interval--;
-    }
+
+	this.interval = this.t_0 - performance.now() + this.interval_bridge * this.velocity;
+    };
 
     this.display = function() {
 	this.tail_now = this.body[0];
@@ -173,5 +169,5 @@ function Snake(params) {
 		y_co(this.body[i].y + 1)
 	    );
 	}
-    }
+    };
 }

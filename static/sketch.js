@@ -3,7 +3,6 @@ var margin = 10;
 var board = [];
 var id = 0;
 var foods = [];
-var myIndex;
 var snakes = {};
 var gameover = false;
 

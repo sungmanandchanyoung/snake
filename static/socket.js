@@ -1,6 +1,5 @@
 var socket = io();
 
-// Promise : Synchronous function
 var init = new Promise((resolve, reject) => {
     socket.emit("init", (data) => {
 	if (data != null) {
@@ -20,12 +19,7 @@ var init = new Promise((resolve, reject) => {
 });
 
 socket.on("disconnected", (data) => {
-    for(var i = 0; i < snakes.length; i++) {
-	if (snakes[i].id == data) {
-	    snakes.splice(i, 1);
-	    break;
-	}
-    }
+    delete snakes[data];
 });
 
 socket.on("init", (data) => {
@@ -35,7 +29,6 @@ socket.on("init", (data) => {
 	velocity: data.snake.velocity,
 	moves: data.snake.moves
     });
-    
     foods.push(new Square({
 	x: data.food.x,
 	y: data.food.y
@@ -49,3 +42,6 @@ function changeDir(data) {
 socket.on("changeDir", (data) => {
     snakes[data.id].moves = data.moves;
 });
+
+function heartbeat() {
+}

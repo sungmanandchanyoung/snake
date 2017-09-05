@@ -1,7 +1,6 @@
 // Dependencies
 var express = require("express");
 var app = express();
-
 var path = require("path");
 var session = require("express-session")({
     secret: "secret",
@@ -19,10 +18,6 @@ var server = app.listen(app.get('port'), function() {
 });
 var io = require("socket.io").listen(server);
 
-
-
-
-
 // Setup to share the session between Express & Socket.io
 app.use(session);
 io.use(sharedSession(session));
@@ -33,7 +28,7 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 
 // Game attribues
 var numOfGrids = 20;
-var velocity = 30;
+var velocity = 1000;
 var foods = [];
 var snakes = {};
 
@@ -58,7 +53,6 @@ io.on("connect", function(socket) {
 	});
 	
 	// Finally the server will return the JSON data as parameter of "callback" function.
-
 	callback({
 	    id : socket.handshake.session.id,
 	    numOfGrids : numOfGrids,
@@ -76,8 +70,6 @@ io.on("connect", function(socket) {
     socket.on("changeDir", (data) => {
 	if (snakes[socket.handshake.session.id]) {
 	    snakes[socket.handshake.session.id].moves = data;
-	    // io.emit("changeDir", snakes);
-	    // socket.broadcast.emit("changeDir", snakes);
 	    socket.broadcast.emit("changeDir", {
 		id: socket.handshake.session.id,
 		moves: snakes[socket.handshake.session.id].moves
@@ -86,30 +78,15 @@ io.on("connect", function(socket) {
     });
     
     socket.on("disconnect", function() {
-	for(var i = 0; i < snakes.length; i++) {
-	    if (snakes[i].id == socket.handshake.session.id) {
-		socket.broadcast.emit("disconnected", snakes[i].id);
-		snakes.splice(i, 1);
-		break;
-	    }
-	}
+	socket.broadcast.emit("disconnected", socket.handshake.session.id);
+	delete snakes[socket.handshake.session.id];
     });
-    // asdf
 });
 
-var OPTIONS = {
-    root: __dirname + "/static/"
-};
-
-
 app.get("/", function(request, response, next) {
-    response.sendFile("index.html", OPTIONS, function(error) {
+    response.sendFile("index.html", {root: __dirname + "/static/"}, function(error) {
 	if (error)
 	    next(error);
     });
 });
 
-
-function update() {
-    
-}
