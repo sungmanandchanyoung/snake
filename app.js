@@ -1,8 +1,8 @@
 // Dependencies
 var express = require("express");
 var app = express();
-var http = require("http").Server(app);
-var io = require("socket.io")(http);
+// var http = require("https").Server(app);
+var io = require("socket.io")();
 var path = require("path");
 var session = require("express-session")({
     secret: "secret",
