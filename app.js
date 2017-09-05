@@ -33,7 +33,7 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 var numOfGrids = 20;
 var velocity = 30;
 var foods = [];
-var snakes = [];
+var snakes = {};
 
 // Socket
 io.on("connect", function(socket) {
@@ -42,13 +42,13 @@ io.on("connect", function(socket) {
 
     // Once client emits "init" event, the server will create new snake & food objects, and push them into the each arrays.
     socket.on("init", (callback) => {
-	snakes.push({
-	    id : socket.handshake.session.id,
+	
+	snakes[socket.handshake.session.id] = {
 	    x : Math.floor(Math.random() * numOfGrids),
 	    y : Math.floor(Math.random() * numOfGrids),
 	    velocity : velocity,
-	    dir : Math.floor(Math.random() * 4 + 37)
-	});
+	    moves: [Math.floor(Math.random() * 4 + 37)]
+	};
 
 	foods.push({
 	    x: Math.floor(Math.random()*numOfGrids),
@@ -56,25 +56,30 @@ io.on("connect", function(socket) {
 	});
 	
 	// Finally the server will return the JSON data as parameter of "callback" function.
+
 	callback({
 	    id : socket.handshake.session.id,
 	    numOfGrids : numOfGrids,
 	    snakes : snakes,
 	    foods : foods
 	});
+
+	io.emit("init", {
+	    id: socket.handshake.session.id,
+	    snake: snakes[socket.handshake.session.id],
+	    food: foods[foods.length - 1]
+	});
     });
 
     socket.on("changeDir", (data) => {
-	for (var i = 0; i < snakes.length; i++) {
-	    if (snakes[i].id == data.id) {
-		snakes[i].x = data.x;
-		snakes[i].y = data.y;
-		snakes[i].body = data.body;
-		snakes[i].moves = data.moves;
-		socket.broadcast.emit("changeDir", snakes[i]);
-		break;
-	    }
-	}
+	console.log(socket.handshake.session.id);
+	snakes[socket.handshake.session.id].moves = data;
+	// io.emit("changeDir", snakes);
+	// socket.broadcast.emit("changeDir", snakes);
+	socket.broadcast.emit("changeDir", {
+	    id: socket.handshake.session.id,
+	    moves: snakes[socket.handshake.session.id].moves
+	});
     });
 
     socket.on("disconnect", function() {
@@ -99,3 +104,8 @@ app.get("/", function(request, response, next) {
 	    next(error);
     });
 });
+
+
+function update() {
+    
+}

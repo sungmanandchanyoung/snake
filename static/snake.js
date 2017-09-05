@@ -1,13 +1,11 @@
 // Separated from 'sketch.js' for better readability.
 
 function Snake(params) {
-
-    this.id = params.id;
     this.x = params.x;
     this.y = params.y;
     this.velocity = params.velocity;
     this.interval = this.velocity;
-    this.moves = [params.dir];
+    this.moves = params.moves;
     this.grow = false;
 
     this.body = [{

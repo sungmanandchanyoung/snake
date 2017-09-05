@@ -28,20 +28,24 @@ socket.on("disconnected", (data) => {
     }
 });
 
+socket.on("init", (data) => {
+    snakes[data.id] = new Snake({
+	x: data.snake.x,
+	y: data.snake.y,
+	velocity: data.snake.velocity,
+	moves: data.snake.moves
+    });
+    
+    foods.push(new Square({
+	x: data.food.x,
+	y: data.food.y
+    }));
+});
 
-function changeDir(snake) {
-    socket.emit("changeDir", snake);
+function changeDir(data) {
+    socket.emit("changeDir", data);
 }
 
 socket.on("changeDir", (data) => {
-    console.log(data);
-    for(var i = 0; i < snakes.length; i++) {
-	if(snakes[i].id == data.id) {
-	    snakes[i].x = data.x;
-	    snakes[i].y = data.y;
-	    snakes[i].body = data.body;
-	    snakes[i].moves = data.moves;
-	    break;
-	}
-    }
+    snakes[data.id].moves = data.moves;
 });

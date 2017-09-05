@@ -3,33 +3,28 @@ var margin = 10;
 var board = [];
 var id = 0;
 var foods = [];
-var snake;
-var snakes = [];
+var myIndex;
+var snakes = {};
 var gameover = false;
 
 function preload() {
     init
-    
     // The lambda function inside of ".then()" will be the "resolve" function
 	.then((data) => {
 	    // Initialize variables
 	    id = data.id;
 	    numOfGrids = data.numOfGrids;
-	    // Snakes
-	    for (var i = 0; i < data.snakes.length; i++) {
-		snakes.push(new Snake({
-		    id : data.snakes[i].id,
-		    x : data.snakes[i].x,
-		    y : data.snakes[i].y,
-		    velocity : data.snakes[i].velocity,
-		    dir : data.snakes[i].dir
-		}));
 
-		// My snake
-		if (snakes[snakes.length - 1].id == id) {
-		    snake = snakes[snakes.length - 1];
-		}
+	    // Snakes
+	    for(var i in data.snakes) {
+		snakes[i] = new Snake({
+		    x: data.snakes[i].x,
+		    y: data.snakes[i].y,
+		    velocity: data.snakes[i].velocity,
+		    moves: data.snakes[i].moves
+		});
 	    }
+
 	    // Foods
 	    for (var i = 0; i < data.foods.length; i++) {
 		foods.push(new Square({
@@ -38,7 +33,7 @@ function preload() {
 		}));
 	    }
 	})
-    
+
     // The lambda function inside of ".catch()" will be the "reject" function
 	.catch((reason) => {
 	    console.log("ERROR");
@@ -78,7 +73,7 @@ function draw() {
 
     // Snakes
     fill(255, 0, 0);
-    for(var i = 0; i < snakes.length; i++) {
+    for(var i in snakes) {
 	snakes[i].update();
 	snakes[i].display();
     }
@@ -90,6 +85,7 @@ function draw() {
 }
 
 function keyPressed() {
+    var snake = snakes[id];
     var lastMove = snake.moves[snake.moves.length - 1];
     switch (keyCode) {
     case LEFT_ARROW:
@@ -105,7 +101,7 @@ function keyPressed() {
 	if (lastMove != UP_ARROW && lastMove != DOWN_ARROW) snake.moves.push(DOWN_ARROW);
 	break;
     }
-    changeDir(snake);
+    changeDir(snake.moves);
 }
 
 function y_co(y) {
