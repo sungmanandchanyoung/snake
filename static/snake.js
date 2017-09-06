@@ -6,7 +6,7 @@ function Snake(params) {
     this.velocity = params.velocity;
     this.interval = this.velocity;
     this.interval_bridge = 1;
-    this.t_0 = performance.now();
+    this.t_0 = params.t_0;
     this.moves = params.moves;
     this.grow = false;
 

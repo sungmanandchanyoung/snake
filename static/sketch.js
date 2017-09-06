@@ -20,6 +20,7 @@ function preload() {
 		    x: data.snakes[i].x,
 		    y: data.snakes[i].y,
 		    velocity: data.snakes[i].velocity,
+		    t_0: data.snakes[i].t_0,
 		    moves: data.snakes[i].moves
 		});
 	    }

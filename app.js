@@ -18,6 +18,7 @@ var server = app.listen(app.get('port'), function() {
 });
 var io = require("socket.io").listen(server);
 
+
 // Setup to share the session between Express & Socket.io
 app.use(session);
 io.use(sharedSession(session));
@@ -32,38 +33,40 @@ var velocity = 1000;
 var foods = [];
 var snakes = {};
 
-// Socket
-io.on("connect", function(socket) {
-    console.log("User : " + socket.handshake.session.id);
-    console.log("Connected : " + new Date());
 
-    // Once client emits "init" event, the server will create new snake & food objects, and push them into the each arrays.
+
+
+
+
+// Socket
+io.on("connect", (socket) => {
+    console.log("User[" + socket.handshake.session.id + "] [" + new Date() + "]");
+
     socket.on("init", (callback) => {
-	
 	snakes[socket.handshake.session.id] = {
-	    x : Math.floor(Math.random() * numOfGrids),
-	    y : Math.floor(Math.random() * numOfGrids),
-	    velocity : velocity,
+	    x: Math.floor(Math.random() * numOfGrids),
+	    y: Math.floor(Math.random() * numOfGrids),
+	    velocity: velocity,
+	    t_0: Date.now() % velocity,
 	    moves: [Math.floor(Math.random() * 4 + 37)]
 	};
-
+	
 	foods.push({
 	    x: Math.floor(Math.random()*numOfGrids),
 	    y: Math.floor(Math.random()*numOfGrids)
 	});
 	
-	// Finally the server will return the JSON data as parameter of "callback" function.
-	callback({
-	    id : socket.handshake.session.id,
-	    numOfGrids : numOfGrids,
-	    snakes : snakes,
-	    foods : foods
-	});
-
-	io.emit("init", {
+	socket.broadcast.emit("newUser", {
 	    id: socket.handshake.session.id,
 	    snake: snakes[socket.handshake.session.id],
 	    food: foods[foods.length - 1]
+	});
+	
+	callback({
+	    id: socket.handshake.session.id,
+	    numOfGrids: numOfGrids,
+	    snakes: snakes,
+	    foods: foods
 	});
     });
 

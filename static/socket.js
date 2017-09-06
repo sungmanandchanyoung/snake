@@ -1,32 +1,36 @@
 var socket = io();
 
+socket.on("disconnected", (id) => {
+    delete snakes[id];
+});
+
 var init = new Promise((resolve, reject) => {
     socket.emit("init", (data) => {
+	// If the returned "data" is not null, the "resolve" function will be called.
+	// At this point, the "resolve" function is NOT defined.
+	// It will be defined when this Promise function is called.
 	if (data != null) {
-	    console.log("init data");
-	    console.log(data);
-	    // If the returned "data" is not null, the "resolve" function will be called.
-	    // At this point, the "resolve" function is NOT defined.
-	    // It will be defined when this Promise function is called.
 	    resolve(data);
+	    setInterval(() => {
+		socket.emit("heartbeat", {
+		    id: id,
+		    snake: snakes[id]
+		});
+	    }, 50);
 	}
-	else {
-	    // If the "data" is null, the request to the server will be treated as failed.
-	    // Finally the "reject" function will be called.
-	    reject();
-	}
+	
+	// If the "data" is null, the request to the server will be treated as failed.
+	// Finally the "reject" function will be called.
+	else reject();
     });
 });
 
-socket.on("disconnected", (data) => {
-    delete snakes[data];
-});
-
-socket.on("init", (data) => {
+socket.on("newUser", (data) => {
     snakes[data.id] = new Snake({
 	x: data.snake.x,
 	y: data.snake.y,
 	velocity: data.snake.velocity,
+	t_0: data.snake.t_0,
 	moves: data.snake.moves
     });
     foods.push(new Square({
@@ -42,6 +46,3 @@ function changeDir(data) {
 socket.on("changeDir", (data) => {
     snakes[data.id].moves = data.moves;
 });
-
-function heartbeat() {
-}
