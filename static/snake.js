@@ -25,11 +25,10 @@ function Snake(params) {
     this.move = true;
 
     this.update = function() {
-	heartbeat(this.body);
 	
-	if (temp[id]) {
-	    this.body = temp[id];
-	}
+	// if (temp[id]) {
+	    // this.body = temp[id];
+	// }
 	
 	if (this.interval < 0) {
 	    if (this.moves.length > 1 && this.move)
@@ -69,6 +68,7 @@ function Snake(params) {
             case true:
 		this.grow = false;
 		break;
+		
             case false:
 		(this.body).shift();
 		break;

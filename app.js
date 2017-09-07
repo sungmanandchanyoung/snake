@@ -29,7 +29,7 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 
 // Game attribues
 var numOfGrids = 20;
-var velocity = 1000;
+var velocity = 2000;
 var foods = [];
 var snakes = {};
 
@@ -37,13 +37,16 @@ var snakes = {};
 // Socket
 io.on("connect", (socket) => {
     console.log("User[" + socket.handshake.session.id + "] [" + new Date() + "]");
-
+    
     socket.on("init", (callback) => {
+	
 	var x = Math.floor(Math.random() * numOfGrids);
 	var y = Math.floor(Math.random() * numOfGrids);
+
+	// var x = 10;
+	// var y = 8;
+	
 	snakes[socket.handshake.session.id] = {
-	    // x: x,
-	    // y: y,
 	    velocity: velocity,
 	    t_0: Date.now() % velocity,
 	    moves: [Math.floor(Math.random() * 4 + 37)],
@@ -57,12 +60,12 @@ io.on("connect", (socket) => {
 	    x: Math.floor(Math.random()*numOfGrids),
 	    y: Math.floor(Math.random()*numOfGrids)
 	});
-	
-	socket.broadcast.emit("newUser", {
-	    id: socket.handshake.session.id,
-	    snake: snakes[socket.handshake.session.id],
-	    food: foods[foods.length - 1]
-	});
+
+	// console.log(snakes);
+	for (var i in snakes) {
+	    // console.log(i);
+	    // console.log(snakes[i].body[0]);
+	};
 	
 	callback({
 	    id: socket.handshake.session.id,
@@ -70,22 +73,30 @@ io.on("connect", (socket) => {
 	    snakes: snakes,
 	    foods: foods
 	});
+
+	socket.broadcast.emit("newUser", {
+	    id: socket.handshake.session.id,
+	    snake: snakes[socket.handshake.session.id],
+	    food: foods[foods.length - 1]
+	});
     });
 
     socket.on("heartbeat", (body) => {
-	if (snakes[socket.handshake.session.id]){
-	    snakes[socket.handshake.session.id].body = body;
-	    socket.broadcast.emit("heartbeat", {
-		id: socket.handshake.session.id,
-		body: snakes[socket.handshake.session.id].body
-	    });
-	}
+	if (!snakes[socket.handshake.session.id]) return;
+	
+	snakes[socket.handshake.session.id].body = body;
+	
+	socket.broadcast.emit("heartbeat", {
+	    id: socket.handshake.session.id,
+	    body: snakes[socket.handshake.session.id].body
+	});
+	
     });
 
     socket.on("changeDir", (moves) => {
 	if (!snakes[socket.handshake.session.id]) return;
+
 	snakes[socket.handshake.session.id].moves = moves;
-	
 	socket.broadcast.emit("changeDir", {
 	    id: socket.handshake.session.id,
 	    moves: snakes[socket.handshake.session.id].moves

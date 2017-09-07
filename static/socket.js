@@ -1,5 +1,4 @@
 var socket = io();
-
 var temp = {};
 
 socket.on("disconnected", (id) => {
@@ -43,7 +42,14 @@ function heartbeat(body) {
 }
 
 socket.on("heartbeat", (data) => {
-    temp[data.id] = data.body;
+    // temp[data.id] = data.body;
+    if (snakes[data.id]) {
+	// var length = snakes[data.id].body.length;
+	// if (snakes[data.id].body[length - 1] != data.body[data.body.length - 1])
+	snakes[data.id].body = data.body;
+    }
+    
+
 });
 
 function changeDir(moves) {

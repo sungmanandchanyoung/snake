@@ -18,8 +18,6 @@ function preload() {
 	    // Snakes
 	    for(var i in data.snakes) {
 		snakes[i] = new Snake({
-		    // x: data.snakes[i].x,
-		    // y: data.snakes[i].y,
 		    color: (i == id) ? [0, 255, 0] : [255, 0, 0],
 		    velocity: data.snakes[i].velocity,
 		    t_0: data.snakes[i].t_0,
@@ -75,13 +73,22 @@ function draw() {
 	foods[i].display();
     }
 
-    // Snakes
+    if (id)
+	heartbeat(snakes[id].body);
 
+    // Snakes
     for(var i in snakes) {
 	fill(snakes[i].color);
 	snakes[i].update();
+	// console.log();
+	// console.log(i + "  :  " + snakes[i].interval);
+	// console.log(i);
+	// console.log("interval : " + snakes[i].interval);
+	// console.log(snakes[i].body[0].x + ", "+ snakes[i].body[0].y);
 	snakes[i].display();
     }
+    
+    
     
     if (gameover) {
 	// fill(255, 0, 0);
