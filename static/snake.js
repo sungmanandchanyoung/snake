@@ -1,8 +1,7 @@
 // Separated from 'sketch.js' for better readability.
 
 function Snake(params) {
-    this.x = params.x;
-    this.y = params.y;
+    this.color = params.color;
     this.velocity = params.velocity;
     this.interval = this.velocity;
     this.interval_bridge = 1;
@@ -10,10 +9,11 @@ function Snake(params) {
     this.moves = params.moves;
     this.grow = false;
 
-    this.body = [{
-	x: this.x,
-	y: this.y
-    }];
+    this.body = params.body;
+    console.log("this.body : " + this.body[0].x + ", " + this.body[0].y);
+    console.log("params.body : " + params.body[0].x + ", " + params.body[0].y);
+    this.x = this.body[0].x;
+    this.y = this.body[0].y;
 
     // this.tail and head_prev is to remember the snake.head_prev box for animation
     this.tail_prev = 0;
@@ -25,6 +25,12 @@ function Snake(params) {
     this.move = true;
 
     this.update = function() {
+	heartbeat(this.body);
+	
+	if (temp[id]) {
+	    this.body = temp[id];
+	}
+	
 	if (this.interval < 0) {
 	    if (this.moves.length > 1 && this.move)
 		this.moves.shift();
@@ -47,15 +53,18 @@ function Snake(params) {
 		this.y++;
 		break;
 	    }
+	    
 	    // Turn this.move as true
 	    if (this.moves.length > 1) this.moves.shift();
 
 	    this.interval_bridge += (int(Math.abs(this.interval / this.velocity)) + 1);
-	    this.interval = (this.t_0 - performance.now()) + this.interval_bridge * this.velocity;
+	    this.interval = (this.t_0 - Date.now()) + this.interval_bridge * this.velocity;
+
 	    
 	    this.tail_prev = this.body[0];
 	    this.head_prev = this.body[this.body.length - 1];
 
+	    
 	    switch (this.grow) {
             case true:
 		this.grow = false;
@@ -81,7 +90,7 @@ function Snake(params) {
 	    }
 	}
 
-	this.interval = this.t_0 - performance.now() + this.interval_bridge * this.velocity;
+	this.interval = this.t_0 - Date.now() + this.interval_bridge * this.velocity;
     };
 
     this.display = function() {

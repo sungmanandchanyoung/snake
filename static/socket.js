@@ -1,5 +1,7 @@
 var socket = io();
 
+var temp = {};
+
 socket.on("disconnected", (id) => {
     delete snakes[id];
 });
@@ -11,12 +13,6 @@ var init = new Promise((resolve, reject) => {
 	// It will be defined when this Promise function is called.
 	if (data != null) {
 	    resolve(data);
-	    setInterval(() => {
-		socket.emit("heartbeat", {
-		    id: id,
-		    snake: snakes[id]
-		});
-	    }, 50);
 	}
 	
 	// If the "data" is null, the request to the server will be treated as failed.
@@ -27,22 +23,34 @@ var init = new Promise((resolve, reject) => {
 
 socket.on("newUser", (data) => {
     snakes[data.id] = new Snake({
-	x: data.snake.x,
-	y: data.snake.y,
+	// x: data.snake.x,
+	// y: data.snake.y,
+	color: [255, 0, 0],
 	velocity: data.snake.velocity,
 	t_0: data.snake.t_0,
-	moves: data.snake.moves
+	moves: data.snake.moves,
+	body: data.snake.body
     });
+    
     foods.push(new Square({
 	x: data.food.x,
 	y: data.food.y
     }));
 });
 
-function changeDir(data) {
-    socket.emit("changeDir", data);
+function heartbeat(body) {
+    socket.emit("heartbeat", body);
+}
+
+socket.on("heartbeat", (data) => {
+    temp[data.id] = data.body;
+});
+
+function changeDir(moves) {
+    socket.emit("changeDir", moves);
 }
 
 socket.on("changeDir", (data) => {
-    snakes[data.id].moves = data.moves;
+    if(snakes[data.id])
+	snakes[data.id].moves = data.moves;
 });

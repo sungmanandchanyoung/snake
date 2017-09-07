@@ -1,7 +1,8 @@
 var numOfGrids = 1;
 var margin = 10;
 var board = [];
-var id = 0;
+var id = "";
+var t_0 = 0;
 var foods = [];
 var snakes = {};
 var gameover = false;
@@ -17,13 +18,16 @@ function preload() {
 	    // Snakes
 	    for(var i in data.snakes) {
 		snakes[i] = new Snake({
-		    x: data.snakes[i].x,
-		    y: data.snakes[i].y,
+		    // x: data.snakes[i].x,
+		    // y: data.snakes[i].y,
+		    color: (i == id) ? [0, 255, 0] : [255, 0, 0],
 		    velocity: data.snakes[i].velocity,
 		    t_0: data.snakes[i].t_0,
-		    moves: data.snakes[i].moves
+		    moves: data.snakes[i].moves,
+		    body: data.snakes[i].body
 		});
 	    }
+	    t_0 = snakes[id].t_0;
 
 	    // Foods
 	    for (var i = 0; i < data.foods.length; i++) {
@@ -72,8 +76,9 @@ function draw() {
     }
 
     // Snakes
-    fill(255, 0, 0);
+
     for(var i in snakes) {
+	fill(snakes[i].color);
 	snakes[i].update();
 	snakes[i].display();
     }
@@ -101,7 +106,9 @@ function keyPressed() {
 	if (lastMove != UP_ARROW && lastMove != DOWN_ARROW) snake.moves.push(DOWN_ARROW);
 	break;
     }
+    
     changeDir(snake.moves);
+
 }
 
 function y_co(y) {

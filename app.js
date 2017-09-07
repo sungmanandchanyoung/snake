@@ -34,21 +34,23 @@ var foods = [];
 var snakes = {};
 
 
-
-
-
-
 // Socket
 io.on("connect", (socket) => {
     console.log("User[" + socket.handshake.session.id + "] [" + new Date() + "]");
 
     socket.on("init", (callback) => {
+	var x = Math.floor(Math.random() * numOfGrids);
+	var y = Math.floor(Math.random() * numOfGrids);
 	snakes[socket.handshake.session.id] = {
-	    x: Math.floor(Math.random() * numOfGrids),
-	    y: Math.floor(Math.random() * numOfGrids),
+	    // x: x,
+	    // y: y,
 	    velocity: velocity,
 	    t_0: Date.now() % velocity,
-	    moves: [Math.floor(Math.random() * 4 + 37)]
+	    moves: [Math.floor(Math.random() * 4 + 37)],
+	    body: [{
+		x: x,
+		y: y
+	    }]
 	};
 	
 	foods.push({
@@ -70,14 +72,24 @@ io.on("connect", (socket) => {
 	});
     });
 
-    socket.on("changeDir", (data) => {
-	if (snakes[socket.handshake.session.id]) {
-	    snakes[socket.handshake.session.id].moves = data;
-	    socket.broadcast.emit("changeDir", {
+    socket.on("heartbeat", (body) => {
+	if (snakes[socket.handshake.session.id]){
+	    snakes[socket.handshake.session.id].body = body;
+	    socket.broadcast.emit("heartbeat", {
 		id: socket.handshake.session.id,
-		moves: snakes[socket.handshake.session.id].moves
+		body: snakes[socket.handshake.session.id].body
 	    });
 	}
+    });
+
+    socket.on("changeDir", (moves) => {
+	if (!snakes[socket.handshake.session.id]) return;
+	snakes[socket.handshake.session.id].moves = moves;
+	
+	socket.broadcast.emit("changeDir", {
+	    id: socket.handshake.session.id,
+	    moves: snakes[socket.handshake.session.id].moves
+	});
     });
     
     socket.on("disconnect", function() {
@@ -88,8 +100,6 @@ io.on("connect", (socket) => {
 
 app.get("/", function(request, response, next) {
     response.sendFile("index.html", {root: __dirname + "/static/"}, function(error) {
-	if (error)
-	    next(error);
+	if (error) next(error);
     });
 });
-
