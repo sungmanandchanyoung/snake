@@ -72,23 +72,13 @@ function draw() {
     for(var i = 0; i < foods.length; i++) {
 	foods[i].display();
     }
-
-    if (id)
-	heartbeat(snakes[id].body);
-
+    
     // Snakes
     for(var i in snakes) {
 	fill(snakes[i].color);
-	snakes[i].update();
-	// console.log();
-	// console.log(i + "  :  " + snakes[i].interval);
-	// console.log(i);
-	// console.log("interval : " + snakes[i].interval);
-	// console.log(snakes[i].body[0].x + ", "+ snakes[i].body[0].y);
+	snakes[i].update(i);
 	snakes[i].display();
     }
-    
-    
     
     if (gameover) {
 	// fill(255, 0, 0);

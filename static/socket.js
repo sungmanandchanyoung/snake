@@ -1,5 +1,8 @@
 var socket = io();
-var temp = {};
+var tempTail = {};
+var tempHead = {};
+var tempBody = {};
+var tempBool = {};
 
 socket.on("disconnected", (id) => {
     delete snakes[id];
@@ -22,8 +25,6 @@ var init = new Promise((resolve, reject) => {
 
 socket.on("newUser", (data) => {
     snakes[data.id] = new Snake({
-	// x: data.snake.x,
-	// y: data.snake.y,
 	color: [255, 0, 0],
 	velocity: data.snake.velocity,
 	t_0: data.snake.t_0,
@@ -37,19 +38,16 @@ socket.on("newUser", (data) => {
     }));
 });
 
-function heartbeat(body) {
-    socket.emit("heartbeat", body);
+function heartbeat(data) {
+    socket.emit("heartbeat", data);
 }
 
 socket.on("heartbeat", (data) => {
-    // temp[data.id] = data.body;
-    if (snakes[data.id]) {
-	// var length = snakes[data.id].body.length;
-	// if (snakes[data.id].body[length - 1] != data.body[data.body.length - 1])
-	snakes[data.id].body = data.body;
-    }
-    
 
+    tempTail[data.id] = data.tail_prev;
+    tempHead[data.id] = data.head_prev;
+    tempBody[data.id] = data.body;
+    tempBool[data.id] = true;
 });
 
 function changeDir(moves) {

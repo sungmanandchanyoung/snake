@@ -29,30 +29,22 @@ app.use("/static", express.static(path.join(__dirname, "static")));
 
 // Game attribues
 var numOfGrids = 20;
-var velocity = 2000;
+var velocity = 3000;
 var foods = [];
 var snakes = {};
 
-
 // Socket
 io.on("connect", (socket) => {
-    console.log("User[" + socket.handshake.session.id + "] [" + new Date() + "]");
+    console.log("User [ " + socket.handshake.session.id + " ] [ " + new Date() + " ]");
     
     socket.on("init", (callback) => {
-	
-	var x = Math.floor(Math.random() * numOfGrids);
-	var y = Math.floor(Math.random() * numOfGrids);
-
-	// var x = 10;
-	// var y = 8;
-	
 	snakes[socket.handshake.session.id] = {
 	    velocity: velocity,
 	    t_0: Date.now() % velocity,
 	    moves: [Math.floor(Math.random() * 4 + 37)],
 	    body: [{
-		x: x,
-		y: y
+		x: Math.floor(Math.random() * numOfGrids),
+		y: Math.floor(Math.random() * numOfGrids)
 	    }]
 	};
 	
@@ -60,12 +52,6 @@ io.on("connect", (socket) => {
 	    x: Math.floor(Math.random()*numOfGrids),
 	    y: Math.floor(Math.random()*numOfGrids)
 	});
-
-	// console.log(snakes);
-	for (var i in snakes) {
-	    // console.log(i);
-	    // console.log(snakes[i].body[0]);
-	};
 	
 	callback({
 	    id: socket.handshake.session.id,
@@ -81,14 +67,16 @@ io.on("connect", (socket) => {
 	});
     });
 
-    socket.on("heartbeat", (body) => {
+    socket.on("heartbeat", (data) => {
 	if (!snakes[socket.handshake.session.id]) return;
 	
-	snakes[socket.handshake.session.id].body = body;
+	snakes[socket.handshake.session.id].body = data.body;
 	
 	socket.broadcast.emit("heartbeat", {
 	    id: socket.handshake.session.id,
-	    body: snakes[socket.handshake.session.id].body
+	    body: snakes[socket.handshake.session.id].body,
+	    tail_prev: data.tail_prev,
+	    head_prev: data.head_prev
 	});
 	
     });

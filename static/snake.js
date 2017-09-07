@@ -8,13 +8,11 @@ function Snake(params) {
     this.t_0 = params.t_0;
     this.moves = params.moves;
     this.grow = false;
-
     this.body = params.body;
-    console.log("this.body : " + this.body[0].x + ", " + this.body[0].y);
-    console.log("params.body : " + params.body[0].x + ", " + params.body[0].y);
     this.x = this.body[0].x;
     this.y = this.body[0].y;
-
+    this.updated = false;
+    
     // this.tail and head_prev is to remember the snake.head_prev box for animation
     this.tail_prev = 0;
     this.tail_now = 0;
@@ -24,33 +22,18 @@ function Snake(params) {
     // Allows the snake to store a sequence of moves to be moved each square
     this.move = true;
 
-    this.update = function() {
-	
-	// if (temp[id]) {
-	    // this.body = temp[id];
-	// }
-	
+    this.update = function(j) {
 	if (this.interval < 0) {
-	    if (this.moves.length > 1 && this.move)
-		this.moves.shift();
+	    this.updated = true;
+	    if (this.moves.length > 1 && this.move) this.moves.shift();
 	    this.move = false;
-
-	    if (this.moves.length == 1)
-		this.move = true;
+	    if (this.moves.length == 1) this.move = true;
 
 	    switch (this.moves[0]) {
-            case LEFT_ARROW:
-		this.x--;
-		break;
-            case UP_ARROW:
-		this.y--;
-		break;
-            case RIGHT_ARROW:
-		this.x++;
-		break;
-            case DOWN_ARROW:
-		this.y++;
-		break;
+            case LEFT_ARROW: this.x--; break;
+            case UP_ARROW: this.y--; break;
+            case RIGHT_ARROW: this.x++; break;
+            case DOWN_ARROW: this.y++; break;
 	    }
 	    
 	    // Turn this.move as true
@@ -58,38 +41,64 @@ function Snake(params) {
 
 	    this.interval_bridge += (int(Math.abs(this.interval / this.velocity)) + 1);
 	    this.interval = (this.t_0 - Date.now()) + this.interval_bridge * this.velocity;
-
 	    
 	    this.tail_prev = this.body[0];
 	    this.head_prev = this.body[this.body.length - 1];
 
 	    
 	    switch (this.grow) {
-            case true:
-		this.grow = false;
-		break;
-		
-            case false:
-		(this.body).shift();
-		break;
+            case true: this.grow = false; break;
+            case false: (this.body).shift(); break;
 	    }
-
+	    
 	    (this.body).push({
 		x: this.x,
 		y: this.y
 	    });
 
-	    for (var i = 0; i < this.body.length - 1; i++) {
-		if (this.x == this.body[i].x && this.y == this.body[i].y) {
-		    gameover = true;
-		}
-	    }
+	    if(id) heartbeat({
+		tail_prev: this.tail_prev,
+		head_prev: this.head_prev,
+		body: snakes[id].body
+	    });
 
+	    for (var i = 0; i < this.body.length - 1; i++) {
+		if (this.x == this.body[i].x && this.y == this.body[i].y) gameover = true;
+	    }
 	    if (this.x >= numOfGrids || this.y >= numOfGrids || this.x < 0 || this.y < 0) {
 		gameover = true;
 	    }
-	}
 
+	    if (tempBool[j] && tempBody[j] != this.body && j != id) {
+		
+		console.log(tempBody[j]);
+		console.log(this.body);
+		
+		// this.tail_prev = this.body[0];
+		// this.head_prev = this.body[this.body.length - 1];
+		this.tail_prev = tempTail[j];
+		this.head_prev = tempHead[j];
+		this.body = tempBody[j];
+		tempBool[j] = false;
+		this.updated = false;
+	    }
+	}
+	
+	if (this.updated) {
+	    if (tempBool[j] && tempBody[j] != this.body && j != id) {
+		
+		console.log(tempBody[j]);
+		console.log(this.body);
+		
+		// this.tail_prev = this.body[0];
+		// this.head_prev = this.body[this.body.length - 1];
+		this.tail_prev = tempTail[j];
+		this.head_prev = tempHead[j];
+		this.body = tempBody[j];
+		tempBool[j] = false;
+		this.updated = false;
+	    }
+	}
 	this.interval = this.t_0 - Date.now() + this.interval_bridge * this.velocity;
     };
 
